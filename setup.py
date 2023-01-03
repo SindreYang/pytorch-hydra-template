@@ -3,14 +3,13 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='project',
-    version='0.0.0',
-    description='Describe Your Cool Project',
-    author='',
-    author_email='',
-    # REPLACE WITH YOUR OWN GITHUB PROJECT LINK
-    url='https://github.com/PyTorchLightning/pytorch-lightning-conference-seed',
-    install_requires=['pytorch-lightning'],
+    name='src',
+    version='1.0.0',
+    description='项目描述',
+    author='sindre',
+    author_email='yx@mviai.com',
+    url='项目地址',
+    install_requires=["pytorch","hydra-core"],
     packages=find_packages(),
 )
 
