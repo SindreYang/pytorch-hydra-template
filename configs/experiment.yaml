@@ -1,0 +1,34 @@
+# @package _global_
+
+ # 实验名称
+name: "default"
+# 测试 or 训练
+train: True
+test: True
+
+# 在此指定默认训练配置
+defaults:
+  - _self_
+  - my_envs: default.yaml  # 文件夹路径：文件名
+  - override hydra/hydra_logging: colorlog # 启用颜色记录插件
+  - override hydra/job_logging: colorlog # 启用颜色记录插件
+
+
+
+##########################    其他设置   #######################################################
+
+
+# 自定义工作目录模式
+hydra:
+  run:
+    dir: logs/runs/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}  #单次运行
+  sweep:
+    dir: logs/multiruns/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}   #多次运行 如：python my_app.py --multirun a=a1,a2,a3
+    subdir: ${hydra.job.num}
+
+  verbose: True # 将所有命令行记录器的级别设置为 “调试”
+
+
+
+
+

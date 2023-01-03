@@ -1,0 +1,60 @@
+# @package _global_
+
+# Optuna的一些实验的示例超参数优化:
+# python train.py -m hparams_search=mnist_optuna experiment=example
+
+defaults:
+  - override /hydra/sweeper: optuna
+
+# 选择将由Optuna优化的指标
+# 确保这是闪电模块中登录的某些指标的正确名称!
+optimized_metric: "val/acc_best"
+
+# 这里我们定义了Optuna超参数搜索
+# 它使用 @ hydra优化函数返回的值。主装饰器
+# docs: https://hydra.cc/docs/next/plugins/optuna_sweeper
+hydra:
+  sweeper:
+    _target_: hydra_plugins.hydra_optuna_sweeper.optuna_sweeper.OptunaSweeper
+
+    # 保存优化结果的存储URL
+    # 例如，您可以使用SQLite，如果您设置 'sqlite:///example.db'
+    storage: null
+
+    # 持续优化结果的研究名称
+    study_name: null
+
+    # 工作流数量
+    n_jobs: 1
+
+    # “最小化” 或 “最大化” 目标
+    direction: maximize
+
+    # 将要执行的运行总数
+    n_trials: 25
+
+    # 选择Optuna hyper 参数采样器
+    # docs: https://optuna.readthedocs.io/en/stable/reference/samplers.html
+    sampler:
+      _target_: optuna.samplers.TPESampler
+      seed: 12345
+      n_startup_trials: 10 # 优化开始前的随机抽样运行次数
+
+    # 定义超参数范围
+    search_space:
+      datamodule.batch_size:
+        type: categorical
+        choices: [32, 64, 128]
+      model.lr:
+        type: float
+        low: 0.0001
+        high: 0.2
+      model.net.lin1_size:
+        type: categorical
+        choices: [32, 64, 128, 256, 512]
+      model.net.lin2_size:
+        type: categorical
+        choices: [32, 64, 128, 256, 512]
+      model.net.lin3_size:
+        type: categorical
+        choices: [32, 64, 128, 256, 512]

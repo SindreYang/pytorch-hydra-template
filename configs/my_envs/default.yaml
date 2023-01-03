@@ -1,0 +1,34 @@
+datamodule:
+  _target_: src.datamodules.my_datamodule.MyDataset
+  data_dir: "datasets/torch_datasets"
+  batch_size: 3
+  train_val_test_split: [0.05, 0.05, 0.9] # 如果数据集超过1w时，建议[0.95，0.01，0.04]
+  num_workers: 0
+  pin_memory: False
+  seed: ${..train.seed} # 注意，应该与train.seed 一致
+  augmentation: True
+  sample_size: 1025
+
+model:
+  _target_: src.models.my_module.MyTrain
+  device : "cuda:0" #"cpu"
+  num_classes: 3   # 分类类别数
+  optimizer:
+    _target_: torch.optim.Adam
+    _partial_: true
+    lr: 0.001
+    weight_decay: 0.0
+  loss:
+    _target_: torch.nn.NLLLoss #src.models.components.my_net.MyLoss     #torch.nn.CrossEntropyLoss
+  net:
+    _target_: src.models.components.my_net.MyNet
+    encoder_channel: 3  # 特征通道
+    hidden_size: 512
+    output_class: ${..num_classes}
+
+
+train:
+  seed: 1024
+  epochs: 200
+  ckpt_path:  "best_model.pt"
+  resume_from_checkpoint: "best_model.pt"  # 如果为"，则不继续训练
