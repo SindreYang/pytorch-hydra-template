@@ -13,6 +13,7 @@
  
 ## 项目描述
 基于Pytorch和Hydra实现的训练测试模板 
+![img.png](img.png)
 
 ## 如何运行   
 第一步，安装依赖  
