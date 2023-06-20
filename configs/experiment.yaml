@@ -2,6 +2,9 @@
 
  # 实验名称
 name: "default"
+description: "实验描述，方便记录当前实验方式和细节"
+
+
 # 测试 or 训练
 train: True
 test: True

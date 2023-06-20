@@ -30,5 +30,5 @@ model:
 train:
   seed: 1024
   epochs: 200
-  ckpt_path:  "best_model.pt"
-  resume_from_checkpoint: "best_model.pt"  # 如果为"，则不继续训练
+  ckpt_path: "logs/runs/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}/best_model.pt"
+  resume_from_checkpoint: "logs/runs/${name}/last_model.pt"

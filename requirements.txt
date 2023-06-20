@@ -10,4 +10,3 @@ hydra-optuna-sweeper >= 1.2.0
 
 # --------- others --------- #
 tqdm            # 终端中漂亮的文本格式,进度条，
-pudb            # 调试器

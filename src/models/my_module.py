@@ -65,7 +65,7 @@ class MyTrain:
                 total_loss+=loss.item()
                 # 在每个步骤中更新进度条
                 t.set_postfix(loss=format(loss, '.3f'), acc=format(acc, '.3f'))
-                t.update(1)
+
         loss=loss/len(dataset_loader)
         acc = self.train_acc.compute()  # 使用自定义累积的所有批次的度量
         log.info(f"train_loss:<{loss}")
@@ -84,7 +84,7 @@ class MyTrain:
                     total_loss += loss.item()
                     # 在每个步骤中更新进度条
                     t.set_postfix(loss=format(loss, '.3f'), acc=format(acc, '.3f'))
-                    t.update(1)
+
         loss = loss / len(dataset_loader)
         acc = self.val_acc.compute()  # 使用自定义累积的所有批次的度量
         log.info(f"val_loss:<{loss}>")
@@ -105,15 +105,24 @@ class MyTrain:
                     total_loss += loss.item()
                     # 在每个步骤中更新进度条
                     t.set_postfix(loss=format(loss, '.3f'), acc=format(acc, '.3f'))
-                    t.update(1)
+
         loss = loss / len(dataset_loader)
         acc = self.val_acc.compute()  # 使用自定义累积的所有批次的度量
         log.info(f"test_loss:<{loss}>")
         log.info(f"test_acc:<{acc}>")
         self.test_acc.reset()
 
+    def save_model(self, save_path, new_loss):
+        checkpoint = {
+            "net": self.net.state_dict(),
+            'optimizer': self.optim.state_dict(),
+            "loss": new_loss
+        }
+        log.info(f"Save Model, Path:{save_path}，==>loss:{new_loss}\n")
+        torch.save(checkpoint, save_path)
+
     def init_weights(self, pretrained=''):
-        log.info('=> 正态分布的init权重')
+        log.info('=> init Conv2d and BatchNorm2d ')
         for m in self.net.modules():
             if isinstance(m, nn.Conv2d):
                 # nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
@@ -123,12 +132,14 @@ class MyTrain:
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
         if os.path.isfile(pretrained):
-            pretrained_dict = torch.load(pretrained)
-            log.info('=> 加载预训练模型 {}'.format(pretrained))
+            pre_model = torch.load(pretrained)
+            pretrained_dict = pre_model['net']
+            self.optim.load_state_dict(pre_model['optimizer'])
+            log.info('=> load pretrained  {} => loss :{}'.format(pretrained, pre_model["loss"]))
             model_dict = self.net.state_dict()
             pretrained_dict = {k: v for k, v in pretrained_dict.items()
                                if k in model_dict.keys()}
             for k, _ in pretrained_dict.items():
-                log.info('=> 加载 {} 预训练模型 {}'.format(k, pretrained))
+                log.info('=> load {} in  {}'.format(k, pretrained))
             model_dict.update(pretrained_dict)
             self.net.load_state_dict(model_dict)

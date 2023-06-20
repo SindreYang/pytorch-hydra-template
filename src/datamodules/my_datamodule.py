@@ -16,6 +16,7 @@ class MyDataset(Dataset):
             seed: int = 1024,
             mode: str = "train",
             augmentation: bool = True,
+            prefetch_factor: int =2,
             sample_size: int = 1024,
     ):
         super().__init__()
@@ -36,6 +37,7 @@ class MyDataset(Dataset):
         self.seed = seed
         self.data_augmentation = augmentation
         self.sample_size = sample_size
+        self.prefetch_factor=prefetch_factor
 
         if mode == "train":
             self.datasets = self.data_train
@@ -99,6 +101,7 @@ class MyDataset(Dataset):
             pin_memory=self.pin_memory,
             shuffle=True,
             worker_init_fn=self._init_fn,
+            prefetch_factor=self.prefetch_factor,
         )
 
     def val_dataloader(self):
@@ -109,6 +112,7 @@ class MyDataset(Dataset):
             pin_memory=self.pin_memory,
             shuffle=False,
             worker_init_fn=self._init_fn,
+            prefetch_factor=self.prefetch_factor,
         )
 
     def test_dataloader(self):
@@ -119,4 +123,6 @@ class MyDataset(Dataset):
             pin_memory=self.pin_memory,
             shuffle=False,
             worker_init_fn=self._init_fn,
+            prefetch_factor=self.prefetch_factor,
         )
+

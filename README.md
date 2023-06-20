@@ -10,8 +10,15 @@
 </div>
  
 ## 项目描述
-基于Pytorch和Hydra实现的训练测试模板 
-![img.png](img.png)
+1. 需求
+   1. 框架重复性过高，很多模块是重复性的。
+   2. pytorch-lighting学习成本高，失去了原生pytorch感觉。
+   3. 实验需要改变部分参数及记录相关日志，方便排查问题。
+2. 实现方式
+   1. 使用hydra为配置核心。
+   2. 将pytorch通用的组件实例化。
+3. 效果
+![img.png](img/img.png)
 
 ## 如何运行   
 第一步，安装依赖  
@@ -60,6 +67,7 @@ pip install -e .
 │
 ├── datasets                   <- 训练数据
 │
+├── img                    <- readme图片资源
 ├── logs                   <- Hydra 和 PyTorch 记录器生成的日志
 │
 ├── scripts                <- Shell 脚本
