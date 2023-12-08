@@ -1,5 +1,7 @@
 import os
 import hydra
+from lightning_fabric import fabric
+from lightning_fabric.loggers import TensorBoardLogger
 from omegaconf import DictConfig
 from tqdm import trange
 from src.utils import seed_torch, get_logger
@@ -16,9 +18,9 @@ def main(config_global: DictConfig):
     # 初始化个性环境
     config = config_global.my_envs
 
-
     # 在pytorch，numpy和python中设置随机数生成器的种子
     seed_torch(config.train.get("seed"))
+    fabric.seed_everything(config.train.get("seed"))
     log.info(f"seed is : <{config.train.get('seed')}>")
 
     # 必要时将相对ckpt路径转换为绝对路径
@@ -36,16 +38,19 @@ def main(config_global: DictConfig):
 
     # 初始化模型加载器
     log.info(f"Initialize the Trainer <{config.model._target_}>")
-    train = hydra.utils.instantiate(config.model)
+    tb_logger = TensorBoardLogger(f"logs/runs/", name=config_global.name)
+    log.info(
+        f"From the command line, use <tensorboard --logdir=logs/runs/{config_global.name} > to view the current TensorBoard record.")
+    train = hydra.utils.instantiate(config.model, TensorBoardLog=tb_logger)
 
     # 训练模型
     if config_global.get("train"):
         log.info("start training!")
-        train.init_weights(pretrained=config.train.resume_from_checkpoint)
+        train.load_model(load_path=config.train.resume_from_checkpoint)
         epochs = config.train.epochs
         check_train_loss = 1e4
         check_val_loss = 1e4
-        with trange(epochs,colour="red") as t:
+        with trange(epochs, colour="red") as t:
             for epoch in t:
                 t.set_description(f"总进度 Epoch {epoch}/{epochs} :")
                 train_acc, train_loss = train.training(train_dataloader)
@@ -69,6 +74,7 @@ def main(config_global: DictConfig):
 
     # 确保一切正常关闭
     log.info("Finalizing!")
+    tb_logger.finalize("Finalizing")
 
 
 if __name__ == "__main__":

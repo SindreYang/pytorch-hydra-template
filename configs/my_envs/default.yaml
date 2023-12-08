@@ -11,8 +11,11 @@ datamodule:
 
 model:
   _target_: src.models.my_module.MyTrain
-  device : "cuda:0" #"cpu"
-  num_classes: 3   # 分类类别数
+  num_classes: 3       # 分类类别数
+  accelerator: "auto"  # Fabric加速器类型:默认自动选择."cpu","cuda", "mps", "gpu", "tpu", "auto".
+  strategy: "auto"     # Fabric加速器策略;默认为自动选择."single_device", "dp", "ddp", "ddp_spawn", "deepspeed", "ddp_sharded".
+  devices: 1           # Fabric加速器设备数:默认为自动选择.list[int] 代表指定索引设备运行,.int 代表指定多个设备.-1 代表所有设备一起运行.
+  precision: "32"      # Fabric加速器精度： 默认以32位精度运行;
   optimizer:
     _target_: torch.optim.Adam
     _partial_: true
