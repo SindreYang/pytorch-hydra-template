@@ -34,5 +34,5 @@ pipeline:
 train:
   seed: 1024
   epochs: 200
-  ckpt_path: "logs/runs/${name}/${version}/best_${version}.pt"
-  resume_from_checkpoint: "logs/runs/${name}/${version}/last_${version}.pt"
+  ckpt_path: "logs/runs/${name}/${version}/best_${name}_${version}.pt"
+  resume_from_checkpoint: "logs/runs/${name}/${version}/last_${name}_${version}.pt"
