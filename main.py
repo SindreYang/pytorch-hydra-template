@@ -14,7 +14,7 @@ def main(config_global: DictConfig):
     """
 
     """
-    log.info(f"description: {config_global.description}")
+    log.info(f"name: {config_global.name} version: {config_global.version} description: {config_global.description} ")
     # 初始化个性环境
     config = config_global.my_envs
 
