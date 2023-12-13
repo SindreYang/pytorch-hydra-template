@@ -1,8 +1,9 @@
 ﻿# --------- pytorch --------- #
-torch>=1.13.0
+torch>=2.1.0
 tensorboard
 matplotlib
 torchvision
+torch_tb_profiler
 
 # --------- hydra --------- #
 hydra-core >=1.2.0

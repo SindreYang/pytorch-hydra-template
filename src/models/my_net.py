@@ -186,3 +186,5 @@ class MyNet(nn.Module):
         x = F.log_softmax(x.view(-1, self.output_class), dim=-1)
         x = x.view(batchsize, n_pts, self.output_class)
         return x
+
+

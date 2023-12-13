@@ -9,7 +9,7 @@ class MyDataset(Dataset):
     def __init__(
             self,
             data_dir: str = "datasets/torch_datasets",
-            train_val_test_split=(55_000, 5_000, 10_000),
+            train_val_split:list=[0.9, 0.1] ,
             batch_size: int = 2,
             num_workers: int = 0,
             pin_memory: bool = False,
@@ -26,9 +26,9 @@ class MyDataset(Dataset):
                 if "pts" in file_name:  # 获取pts结尾的点云作为输入
                     path_list.append(os.path.join(root, file_name))
 
-        self.data_train, self.data_val, self.data_test = random_split(
-            dataset=path_list,
-            lengths=train_val_test_split,
+        self.data_train, self.data_val = random_split(
+            dataset=path_list[:100],
+            lengths=train_val_split,
             generator=torch.Generator().manual_seed(seed),
         )
         self.batch_size = batch_size
@@ -43,8 +43,8 @@ class MyDataset(Dataset):
             self.datasets = self.data_train
         elif mode == "val":
             self.datasets = self.data_val
-        else:
-            self.datasets = self.data_test
+        elif mode == "test_performance":
+            self.datasets = torch.utils.data.dataset.Subset(self.data_train,list(range(batch_size*10)))
 
     def __len__(self):
         return len(self.datasets)
@@ -87,6 +87,8 @@ class MyDataset(Dataset):
         point_set = torch.from_numpy(point_set.astype(np.float32)).transpose(1, 0)
         labels = torch.from_numpy(np.array([labels]).astype(np.int64))-1  # 从0开始
 
+        # import trimesh
+        # trimesh.PointCloud(point_set.transpose(1, 0)).show()
         return point_set, labels
 
     def _init_fn(self, worker_id):
@@ -115,14 +117,6 @@ class MyDataset(Dataset):
             prefetch_factor=self.prefetch_factor,
         )
 
-    def test_dataloader(self):
-        return DataLoader(
-            dataset=self,
-            batch_size=self.batch_size,
-            num_workers=self.num_workers,
-            pin_memory=self.pin_memory,
-            shuffle=False,
-            worker_init_fn=self._init_fn,
-            prefetch_factor=self.prefetch_factor,
-        )
+
+
 

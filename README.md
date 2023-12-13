@@ -1,7 +1,7 @@
 
 <div align="center">
 
-# Pytorch-Hydra 模板 
+# Pytorch-Hydra-fabric 模板 
 <a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white"></a>
 <a href="https://hydra.cc/"><img alt="Config: Hydra" src="https://img.shields.io/badge/Config-Hydra-89b8cd"></a>
 [![Conference](https://img.shields.io/badge/User-Sindre-orange)]()
@@ -14,11 +14,30 @@
    1. 框架重复性过高，很多模块是重复性的。
    2. pytorch-lighting学习成本高，失去了原生pytorch感觉。
    3. 实验需要改变部分参数及记录相关日志，方便排查问题。
+   4. 多GPU时编码重复，混合精度编码复杂；
+   5. 版本及实验混乱，训练后还要依次测试。
+   6. 在追求性能时，需要排查哪个算子慢；
 2. 实现方式
    1. 使用hydra为配置核心。
    2. 将pytorch通用的组件实例化。
+   3. 使用lighting-fabric实现多GPU/多节点/混合精度。
+   4. 启动tensorboard统计及渲染信息；
+   5. 用torch_tb_profiler进行性能监测(windows需要torch>2.1,否则会因为json内“/” 问题报错（也可以手动转成“//”))
+   
+
 3. 效果
-![img.png](img/img.png)
+<figure class="half" align="center">
+<img src="img/img.png" width = "100%" height = "50%" >
+<img src="img/img_0.png" width = "50%" height = "50%" >
+<img src="img/img_1.png" width = "50%" height = "50%" >
+<img src="img/img_2.png" width = "50%" height = "50%" >
+<img src="img/img_3.png" width = "50%" height = "50%" >
+<img src="img/img_4.png" width = "50%" height = "50%" >
+<img src="img/img_5.png" width = "50%" height = "50%" >
+<img src="img/img_6.png" width = "50%" height = "50%" >
+<img src="img/img_7.png" width = "50%" height = "50%" >
+</figure>
+
 
 ## 如何运行   
 第一步，安装依赖  
@@ -75,6 +94,7 @@ pip install -e .
 ├── src                    <- 源代码
 │   ├── datamodules              <- 数据模块
 │   ├── models                   <- 模型
+│   ├── pipeline                 <- 流程管理
 │   └── utils                    <- 工具脚本
 │
 │

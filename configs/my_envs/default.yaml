@@ -2,30 +2,31 @@ datamodule:
   _target_: src.datamodules.my_datamodule.MyDataset
   data_dir: "datasets/torch_datasets"
   batch_size: 3
-  train_val_test_split: [0.05, 0.05, 0.9] # 如果数据集超过1w时，建议[0.95，0.01，0.04]
+  train_val_split: [0.95, 0.05]            # 如果数据集超过1w时，建议[0.95，0.01，0.04]
   num_workers: 0
   pin_memory: False
-  seed: ${..train.seed} # 注意，应该与train.seed 一致
+  seed: ${..train.seed}                  # 注意，应该与train.seed 一致
   augmentation: True
   sample_size: 1025
 
-model:
-  _target_: src.models.my_module.MyTrain
-  num_classes: 3       # 分类类别数
-  accelerator: "auto"  # Fabric加速器类型:默认自动选择."cpu","cuda", "mps", "gpu", "tpu", "auto".
-  strategy: "auto"     # Fabric加速器策略;默认为自动选择."single_device", "dp", "ddp", "ddp_spawn", "deepspeed", "ddp_sharded".
-  devices: 1           # Fabric加速器设备数:默认为自动选择.list[int] 代表指定索引设备运行,.int 代表指定多个设备.-1 代表所有设备一起运行.
-  precision: "32"      # Fabric加速器精度： 默认以32位精度运行;
+pipeline:
+  _target_: src.pipeline.my_pipeline.MyPipeline
+  num_classes: 3                         # 分类类别数
+  accelerator: "auto"                    # Fabric加速器类型:默认自动选择."cpu","cuda", "mps", "gpu", "tpu", "auto".
+  strategy: "auto"                       # Fabric加速器策略;默认为自动选择."single_device", "dp", "ddp", "ddp_spawn", "deepspeed", "ddp_sharded".
+  devices: 1                             # Fabric加速器设备数:默认为自动选择.list[int] 代表指定索引设备运行,.int 代表指定多个设备.-1 代表所有设备一起运行.
+  precision: "32"                        # Fabric加速器精度： 默认以32位精度运行;
+  net_input_size: [1,3,1024]             # net输入大小，用于保存在tb上;
   optimizer:
     _target_: torch.optim.Adam
     _partial_: true
     lr: 0.001
     weight_decay: 0.0
   loss:
-    _target_: torch.nn.NLLLoss #src.models.components.my_net.MyLoss     #torch.nn.CrossEntropyLoss
+    _target_: torch.nn.NLLLoss            # src.models.components.my_net.MyLoss & torch.nn.CrossEntropyLoss
   net:
-    _target_: src.models.components.my_net.MyNet
-    encoder_channel: 3  # 特征通道
+    _target_: src.models.my_net.MyNet
+    encoder_channel: 3                    # 特征通道
     hidden_size: 512
     output_class: ${..num_classes}
 
@@ -33,5 +34,5 @@ model:
 train:
   seed: 1024
   epochs: 200
-  ckpt_path: "logs/runs/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}/best_model.pt"
-  resume_from_checkpoint: "logs/runs/${name}/last_model.pt"
+  ckpt_path: "logs/runs/${name}/${version}/best_${version}.pt"
+  resume_from_checkpoint: "logs/runs/${name}/${version}/last_${version}.pt"
