@@ -37,10 +37,10 @@ def main(config_global: DictConfig):
 
     # 初始化流程加载器
     log.info(f"Initialize the Trainer <{config.pipeline._target_}>")
-    tb_logger = TensorBoardLogger(root_dir="logs/runs/", name=config_global.name, version=config_global.version,
-                                  flush_secs=10)
+    tb_logger = TensorBoardLogger(root_dir=f"logs/runs/{config_global.name}/{config_global.version}/",
+                                  name="TensorBoardLogger",flush_secs=10)
     log.info(
-        f"From the command line, use <tensorboard --logdir={os.path.abspath(tb_logger.log_dir)} > to view the current TensorBoard record.")
+        f"From the command line, use <\t tensorboard --logdir={os.path.abspath(tb_logger.log_dir)} \t> to view the current TensorBoard record.")
     train = hydra.utils.instantiate(config.pipeline, TensorBoardLog=tb_logger)
 
     # 测试训练性能
